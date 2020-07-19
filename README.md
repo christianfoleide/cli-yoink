@@ -1,8 +1,8 @@
-### Yoink
+## Yoink
 
-##### A command line tool for making requests to a restful service
+### A command line tool for making requests to a restful service
 
-####Usage
+#### Usage
 
 GET requests
 
