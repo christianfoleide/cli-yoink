@@ -61,16 +61,25 @@ var (
 					fmt.Println(err)
 					return
 				}
-
 				if Pretty {
 					util.PrettyPrint(result)
 					return
 				}
-
 				fmt.Println(string(result))
 				return
+				
 			case http.MethodPut:
-				fmt.Println("Got PUT method")
+				result, err := methods.Put(dest, file)
+				if err != nil {
+					fmt.Println(err)
+					return
+				}
+				if Pretty {
+					util.PrettyPrint(result)
+					return
+				}
+				fmt.Println(string(result))
+				return
 			}
 		},
 	}
