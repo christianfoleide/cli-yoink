@@ -22,7 +22,7 @@ func Put(dest string, filename string) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-
+	req.Header.Add("Content-Type", "application/json")
 	resp, err := client.Do(req)
 
 	if err != nil {
