@@ -6,8 +6,8 @@ import (
 	"net/http"
 	"os"
 	"strings"
-	"yo/methods"
-	"yo/util"
+	"github.com/christianfoleide/yoink/methods"
+	"github.com/christianfoleide/yoink/util"
 )
 
 var (

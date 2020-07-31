@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"io/ioutil"
 	"net/http"
-	"yo/util"
+	"github.com/christianfoleide/yoink/util"
 )
 
 func Put(dest string, filename string) ([]byte, error) {

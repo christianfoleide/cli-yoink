@@ -1,7 +1,7 @@
 package main
 
 import (
-	"yo/cmd"
+	"github.com/christianfoleide/yoink/cmd"
 )
 
 func main() {

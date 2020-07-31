@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"yo/util"
+	"github.com/christianfoleide/yoink/util"
 )
 
 func Post(dest string, filename string) ([]byte, error) {
