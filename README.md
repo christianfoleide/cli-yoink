@@ -7,7 +7,7 @@
 GET requests
 
 ```bash
-foo@bar:~$ yo resource/uri -p
+foo@bar:~$ yoink resource/uri -p
 ```
 
 The ``-p`` flag is for pretty-printing the result, and is optional.
@@ -15,7 +15,7 @@ The ``-p`` flag is for pretty-printing the result, and is optional.
 POST or PUT requests
 
 ```bash
-foo@bar:~$ yo -m post resource/uri path/to/file.json
+foo@bar:~$ yoink -m post resource/uri path/to/file.json
 ```
 The ``-m`` flag should be followed by your specified request method
 
