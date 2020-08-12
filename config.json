@@ -1,0 +1,7 @@
+{
+  "hostname": "https://www.vg.no",
+  "method": "POST",
+  "path": "/api/v1",
+  "payload": "data.json",
+  "port": "4000"
+}
