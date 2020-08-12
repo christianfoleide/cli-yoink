@@ -1,4 +1,4 @@
-package client
+package yoink
 
 import (
 	"bytes"
@@ -9,9 +9,9 @@ import (
 )
 
 var (
-	ACCEPT_JSON       = "application/json"
-	CONTENT_TYPE_JSON = "application/json"
-	r                 io.Reader
+	acceptJSON      = "application/json"
+	contentTypeJSON = "application/json"
+	r               io.Reader
 )
 
 type client struct {
@@ -21,6 +21,7 @@ type client struct {
 	HTTPClient  *http.Client
 }
 
+//NewClient ...
 func NewClient(method, resourceURI string) *client {
 
 	return &client{
@@ -49,8 +50,8 @@ func (c *client) DoRequest() ([]byte, error) {
 		return nil, err
 	}
 
-	req.Header.Add("Accept", ACCEPT_JSON)
-	req.Header.Add("Content-Type", CONTENT_TYPE_JSON)
+	req.Header.Add("Accept", acceptJSON)
+	req.Header.Add("Content-Type", contentTypeJSON)
 
 	resp, err := c.HTTPClient.Do(req)
 
