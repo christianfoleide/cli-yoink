@@ -2,6 +2,7 @@ package yoink
 
 import (
 	"bytes"
+	"context"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -46,7 +47,7 @@ func NewClient(method, resourceURI string, data []byte) *Client {
 	}
 }
 
-func (c *Client) DoRequest() ([]byte, error) {
+func (c *Client) DoRequest(ctx context.Context) ([]byte, error) {
 
 	req, err := http.NewRequest(c.Method, c.ResourceURI, nil)
 
@@ -61,6 +62,8 @@ func (c *Client) DoRequest() ([]byte, error) {
 	}
 	req.Header.Add("Accept", acceptJSON)
 	req.Header.Add("Content-Type", contentTypeJSON)
+
+	req = req.WithContext(ctx)
 
 	resp, err := c.HTTPClient.Do(req)
 
