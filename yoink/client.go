@@ -12,44 +12,53 @@ var (
 	acceptJSON      = "application/json"
 	contentTypeJSON = "application/json"
 	r               io.Reader
+	rCloser         io.ReadCloser
 )
 
-type client struct {
-	method      string
-	resourceURI string
-	data        []byte
+type Client struct {
+	Method      string
+	ResourceURI string
+	Payload     []byte
 	HTTPClient  *http.Client
 }
 
-//NewClient ...
-func NewClient(method, resourceURI string) *client {
-
-	return &client{
-		method:      method,
-		resourceURI: resourceURI,
-		data:        nil,
+//DefaultClient returns a default client for handling a default GET request
+func DefaultClient(resourceURI string) *Client {
+	return &Client{
+		Method:      "GET",
+		ResourceURI: resourceURI,
 		HTTPClient: &http.Client{
 			Timeout: 30 * time.Second,
 		},
 	}
 }
 
-func (c *client) WithData(data []byte) *client {
-	c.data = data
-	return c
+//NewClient ...
+func NewClient(method, resourceURI string, data []byte) *Client {
+
+	return &Client{
+		Method:      method,
+		ResourceURI: resourceURI,
+		Payload:     data,
+		HTTPClient: &http.Client{
+			Timeout: 30 * time.Second,
+		},
+	}
 }
 
-func (c *client) DoRequest() ([]byte, error) {
+func (c *Client) DoRequest() ([]byte, error) {
 
-	if c.data != nil {
-		r = bytes.NewReader(c.data)
-	}
+	req, err := http.NewRequest(c.Method, c.ResourceURI, nil)
 
-	req, err := http.NewRequest(c.method, c.resourceURI, r)
 	if err != nil {
 		return nil, err
 	}
 
+	if c.Payload != nil {
+		r = bytes.NewReader(c.Payload)
+		rCloser = ioutil.NopCloser(r)
+		req.Body = rCloser
+	}
 	req.Header.Add("Accept", acceptJSON)
 	req.Header.Add("Content-Type", contentTypeJSON)
 
@@ -68,5 +77,4 @@ func (c *client) DoRequest() ([]byte, error) {
 	}
 
 	return b, nil
-
 }

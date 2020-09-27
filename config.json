@@ -1,7 +1,7 @@
 {
-  "hostname": "https://www.vg.no",
+  "hostname": "localhost",
   "method": "POST",
-  "path": "/api/v1",
-  "payload": "data.json",
-  "port": "4000"
+  "path": "/api/v1/data",
+  "payload": "payload.json",
+  "port": "8080"
 }

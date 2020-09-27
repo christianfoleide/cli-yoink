@@ -2,43 +2,105 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/christianfoleide/yoink/util"
 	"os"
-	"github.com/christianfoleide/yoink/client"
+	"strings"
+
+	"github.com/christianfoleide/yoink/yoink"
+	"github.com/tidwall/pretty"
+
+	"github.com/christianfoleide/yoink/validation"
+
 	"github.com/spf13/cobra"
 )
 
 var (
-	aliases = []string{"yoink"}
-
-	Pretty bool
-	Method bool
+	changeMethod bool
+	useConfig    bool
+	configFile   = "config.json"
 
 	rootCmd = &cobra.Command{
-		Use:     "yo",
-		Aliases: aliases,
-		Short:   "A network CLI for get, post and put requests to an API",
-		Long:    "A network CLI for GET, POST, and PUT requests to an API where you can specify json files to send as test data. Defaults to GET",
+		Use:   "yoink",
+		Short: "A network CLI tool for sending requests to a resource",
 		Args: func(cmd *cobra.Command, args []string) error {
 
+			if useConfig {
+				return nil
+			}
+
+			if changeMethod {
+
+				if err := validation.ValidateNonDefault(args); err != nil {
+					return err
+				}
+
+			} else {
+
+				if err := validation.ValidateDefault(args); err != nil {
+					return err
+				}
+			}
+
 			return nil
+
 		},
 		Run: func(cmd *cobra.Command, args []string) {
 
-			c := client.NewClient(args[0], args[1])
-			b, err := c.DoRequest()
-			if err != nil {
-				fmt.Println(err)
+			f := yoink.NewFilehandler(configFile)
+
+			if useConfig {
+				c, err := f.ConfigToClient()
+
+				if err != nil {
+					fmt.Printf("error: %s", err)
+					return
+				}
+
+				b, err := c.DoRequest()
+				if err != nil {
+					fmt.Printf("error: %s", err)
+					return
+				}
+
+				PrettyPrint(b)
+				return
 			}
 
-			util.PrettyPrint(b)
+			if changeMethod {
+
+				method := strings.ToUpper(args[0])
+				uri := args[1]
+
+				payloadFile := args[2]
+				payload, err := yoink.ReadFile(payloadFile)
+				if err != nil {
+					fmt.Printf("error: %s", err)
+					return
+				}
+				c := yoink.NewClient(method, uri, payload)
+				b, err := c.DoRequest()
+				if err != nil {
+					fmt.Printf("error: %s", err)
+					return
+				}
+				PrettyPrint(b)
+
+				return
+			}
+			//default GET
+			c := yoink.DefaultClient(args[0])
+			b, err := c.DoRequest()
+			if err != nil {
+				fmt.Printf("error: %s", err)
+			}
+			PrettyPrint(b)
+			return
 		},
 	}
 )
 
 func init() {
-	rootCmd.PersistentFlags().BoolVarP(&Pretty, "pretty", "p", false, "Pretty print request result")
-	rootCmd.PersistentFlags().BoolVarP(&Method, "method", "m", false, "Specifies another request method")
+	rootCmd.Flags().BoolVar(&useConfig, "use-config", false, "do request specified in configuration file")
+	rootCmd.Flags().BoolVarP(&changeMethod, "method", "m", false, "specifies another request method")
 }
 
 func Execute() {
@@ -46,4 +108,9 @@ func Execute() {
 		fmt.Println(err)
 		os.Exit(1)
 	}
+}
+
+func PrettyPrint(response []byte) {
+	pretty := pretty.Pretty(response)
+	fmt.Println(string(pretty))
 }

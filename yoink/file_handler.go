@@ -4,7 +4,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"net/http"
 	"os"
+	"time"
 
 	"github.com/tidwall/pretty"
 )
@@ -19,9 +21,37 @@ func NewFilehandler(filename string) *Filehandler {
 	}
 }
 
+func (f *Filehandler) ConfigToClient() (*Client, error) {
+
+	var config map[string]interface{}
+
+	b, err := ReadFile(f.filename)
+	if err != nil {
+		return nil, err
+	}
+
+	if err = json.Unmarshal(b, &config); err != nil {
+		return nil, err
+	}
+
+	payload, err := ReadFile(config["payload"].(string))
+	if err != nil {
+		return nil, err
+	}
+	
+	return &Client{
+		Method:      config["method"].(string),
+		ResourceURI: fmt.Sprintf("http://%s:%s%s", config["hostname"], config["port"], config["path"]),
+		Payload:     payload,
+		HTTPClient: &http.Client{
+			Timeout: 30 * time.Second,
+		},
+	}, nil
+}
+
 func (f *Filehandler) ListConfig() error {
 
-	b, err := readFile(f.filename)
+	b, err := ReadFile(f.filename)
 	if err != nil {
 		return err
 	}
@@ -35,19 +65,19 @@ func (f *Filehandler) WriteChanges(changes map[string]interface{}) error {
 
 	var currentConfig map[string]interface{}
 
-	b, err := readFile(f.filename)
+	b, err := ReadFile(f.filename)
 	if err != nil {
 		return err
 	}
 
-	json.Unmarshal(b, &currentConfig)
-
-	//keys should be hostname, port, method etc
-	for key, newValue := range changes { //range over properties to be changed
-		currentConfig[key] = newValue //rewrite value of given changed field
+	if err = json.Unmarshal(b, &currentConfig); err != nil {
+		return err
 	}
 
-	//unmarshal into bytes for writing
+	for key, newValue := range changes {
+		currentConfig[key] = newValue
+	}
+
 	b, err = json.Marshal(currentConfig)
 	if err != nil {
 		return err
@@ -64,7 +94,7 @@ func (f *Filehandler) WriteChanges(changes map[string]interface{}) error {
 
 }
 
-func readFile(filename string) ([]byte, error) {
+func ReadFile(filename string) ([]byte, error) {
 
 	file, err := os.Open(filename)
 	if err != nil {

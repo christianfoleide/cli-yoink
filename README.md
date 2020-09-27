@@ -4,20 +4,29 @@
 
 #### Usage
 
-GET requests
+From the directory in which your ``config.json`` resides
+
+### The config command
 
 ```bash
-foo@bar:~$ yoink resource/uri -p
+foo@bar:~$ yoink config list
 ```
 
-The ``-p`` flag is for pretty-printing the result, and is optional.
+Lists the current configuration
 
-POST or PUT requests
+### Using config flags
 
 ```bash
-foo@bar:~$ yoink -m post resource/uri path/to/file.json
+foo@bar:~$ yoink config --set-hostname=<yourhostname>
 ```
-The ``-m`` flag should be followed by your specified request method
+Sets hostname in the configuration file
 
-If the json-data you wish to send is in the current directory, only the filename (with extension) is needed.
+
+Using config to make requests
+
+```bash
+foo@bar:~$ yoink --use-config
+```
+
+
 
