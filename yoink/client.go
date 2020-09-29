@@ -6,7 +6,6 @@ import (
 	"io"
 	"io/ioutil"
 	"net/http"
-	"time"
 )
 
 var (
@@ -29,7 +28,7 @@ func DefaultClient(resourceURI string) *Client {
 		Method:      "GET",
 		ResourceURI: resourceURI,
 		HTTPClient: &http.Client{
-			Timeout: 30 * time.Second,
+			Transport: http.DefaultTransport,
 		},
 	}
 }
@@ -42,7 +41,7 @@ func NewClient(method, resourceURI string, data []byte) *Client {
 		ResourceURI: resourceURI,
 		Payload:     data,
 		HTTPClient: &http.Client{
-			Timeout: 30 * time.Second,
+			Transport: http.DefaultTransport,
 		},
 	}
 }
