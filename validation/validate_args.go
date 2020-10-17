@@ -3,6 +3,7 @@ package validation
 import (
 	"errors"
 	"net/url"
+	"path/filepath"
 	"strings"
 )
 
@@ -48,8 +49,10 @@ func ValidateNonDefault(args []string) error {
 
 func validateExtension(filename string) error {
 
-	return nil
-
+	if filepath.Ext(filename) == "json" {
+		return nil
+	}
+	return errors.New("invalid file extension for payload file")
 }
 
 func validateURL(destination string) error {
