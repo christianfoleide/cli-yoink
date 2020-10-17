@@ -49,7 +49,7 @@ func ValidateNonDefault(args []string) error {
 
 func validateExtension(filename string) error {
 
-	if filepath.Ext(filename) == "json" {
+	if filepath.Ext(filename) == ".json" {
 		return nil
 	}
 	return errors.New("invalid file extension for payload file")
