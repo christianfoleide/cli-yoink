@@ -6,7 +6,6 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
-	"time"
 
 	"github.com/tidwall/pretty"
 )
@@ -38,13 +37,13 @@ func (f *Filehandler) ConfigToClient() (*Client, error) {
 	if err != nil {
 		return nil, err
 	}
-	
+
 	return &Client{
 		Method:      config["method"].(string),
 		ResourceURI: fmt.Sprintf("http://%s:%s%s", config["hostname"], config["port"], config["path"]),
 		Payload:     payload,
 		HTTPClient: &http.Client{
-			Timeout: 30 * time.Second,
+			Transport: http.DefaultTransport,
 		},
 	}, nil
 }
@@ -100,6 +99,7 @@ func ReadFile(filename string) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
+	defer file.Close()
 
 	b, err := ioutil.ReadAll(file)
 	if err != nil {
