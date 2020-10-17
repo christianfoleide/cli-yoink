@@ -18,7 +18,7 @@ var (
 	useConfig    bool
 	configFile   = "config.json"
 
-	deadline = time.Second * 4
+	deadline = time.Second * 30
 
 	rootCmd = &cobra.Command{
 		Use:   "yoink",
